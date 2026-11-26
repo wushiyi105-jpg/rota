@@ -1,0 +1,19 @@
+name: Feature request
+description: 提一个具体需求
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 你遇到的具体麻烦
+      description: 不要写「希望更智能」，写清哪一步卡住了
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: 你希望它怎么做
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 现在怎么绕过去

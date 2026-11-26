@@ -1,0 +1,17 @@
+{
+  "team": "城南咖啡 · 门店",
+  "slots": "morning:收银,evening:,night:夜班",
+  "staff": [
+    { "name": "阿泽", "skills": ["收银", "夜班"] },
+    { "name": "小林", "skills": ["收银"] },
+    { "name": "文文", "skills": ["夜班"] },
+    { "name": "大刘", "skills": [] },
+    { "name": "小周", "skills": ["收银"] },
+    { "name": "阿满", "skills": ["夜班"] }
+  ],
+  "leaves": [
+    { "staff": "小林", "start": "2026-12-10", "end": "2026-12-12", "reason": "事假" },
+    { "staff": "文文", "start": "2026-12-20", "end": "2026-12-22", "reason": "年假" }
+  ],
+  "holidays": ["2027-01-01"]
+}

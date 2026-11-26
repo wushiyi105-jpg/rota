@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rota · 排班</title>
+<style>
+  :root{--bg:#0d1117;--card:#161b22;--line:#30363d;--ink:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--warn:#d29922;--bad:#f85149}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Microsoft YaHei",sans-serif;line-height:1.6}
+  .wrap{max-width:860px;margin:0 auto;padding:40px 20px 80px}
+  h1{font-size:26px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:20px}
+  form{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;align-items:center}
+  input,select{background:#0d1117;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 12px;font-size:14px}
+  button{background:var(--accent);color:#0d1117;border:none;border-radius:8px;padding:9px 16px;font-weight:600;cursor:pointer}
+  button.ghost{background:#21262d;color:var(--ink);border:1px solid var(--line)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{text-align:left;color:var(--muted);font-size:12px;padding:8px 10px;border-bottom:1px solid var(--line)}
+  td{padding:8px 10px;border-bottom:1px solid #21262d}
+  .score{font-variant-numeric:tabular-nums;color:var(--warn)}
+  .empty{color:var(--muted);padding:36px 0;text-align:center}
+  .links{display:flex;gap:12px;font-size:13px;margin:14px 0}
+  .links a{color:var(--accent);text-decoration:none}
+  .err{color:var(--bad);font-size:13px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Rota</h1>
+  <div class="sub">
+    {{ month }} · 团队 {{ staff|length }} 人
+    {% if score is not none %}<span class="score">· 总分 {{ score }}</span>{% endif %}
+  </div>
+
+  {% if error == 'month' %}<div class="err">月份格式应为 YYYY-MM。</div>{% endif %}
+  {% if error == 'date' %}<div class="err">请假日期格式不对，或结束早于开始。</div>{% endif %}
+  {% if error == 'noseed' %}<div class="err">还没有员工，先跑 <code>python -m rota seed</code>。</div>{% endif %}
+
+  <form method="post" action="/plan">
+    <input name="month" value="{{ month }}" placeholder="2026-12">
+    <button type="submit">生成整月班表</button>
+  </form>
+
+  {% if staff %}
+  <form method="post" action="/replan">
+    <input type="hidden" name="month" value="{{ month }}">
+    <select name="staff_id">
+      {% for s in staff %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+    </select>
+    <input name="start" value="{{ today }}" placeholder="请假开始">
+    <input name="end" value="{{ today }}" placeholder="请假结束">
+    <input name="reason" placeholder="事由（可空）">
+    <button class="ghost" type="submit">插请假并重排</button>
+  </form>
+  {% endif %}
+
+  {% if rows %}
+  <table>
+    <thead><tr><th>日期</th><th>早班</th><th>晚班</th><th>夜班</th></tr></thead>
+    <tbody>
+      {% for r in rows %}
+      <tr><td>{{ r.day }}</td><td>{{ r.morning }}</td><td>{{ r.evening }}</td><td>{{ r.night }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="links">
+    <a href="/export.ics?month={{ month }}">导出 ICS</a>
+    <a href="/export.csv?month={{ month }}">导出 CSV</a>
+    <a href="/export.totals?month={{ month }}">人均班次</a>
+    <a href="/explain?month={{ month }}">扣分解释</a>
+  </div>
+  {% else %}
+  <div class="empty">还没有班表。{% if not staff %}先跑 <code>python -m rota seed</code>，{% endif %}再点上面的按钮。</div>
+  {% endif %}
+</div>
+</body>
+</html>

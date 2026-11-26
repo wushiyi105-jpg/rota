@@ -1,0 +1,35 @@
+name: Bug report
+description: 报一个能复现的问题
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        先跑 `python -m rota doctor`，把输出贴进来。请勿填写真实员工姓名与联系方式。
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么
+      description: 一句话说清预期与实际
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. python -m rota seed
+        2. python -m rota plan --month 2026-12
+        3. 看到 ...
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: 命令输出 / 报错
+      render: shell
+  - type: input
+    id: env
+    attributes:
+      label: 环境
+      placeholder: Windows 11 / Python 3.12 / rota 1.0.0
