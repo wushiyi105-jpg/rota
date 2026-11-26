@@ -5,6 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![codecov](https://codecov.io/gh/wushiyi105-jpg/rota/branch/main/graph/badge.svg)](https://codecov.io/gh/wushiyi105-jpg/rota)
 
+![示例](assets/demo.gif)
+
 节假日调休插进来，重排一遍还公平。
 
 排班真正的麻烦不是「排出来」，是两件事：改一个人的假，整张表就乱了；谁都觉得自己周末上多了。
