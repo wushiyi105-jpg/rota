@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from rota.adapters.export import csv_rows, ics, per_staff_totals
+from rota.domain.export import csv_rows, ics, per_staff_totals
 from rota.domain.models import Assignment
 
 NAMES = {1: "阿泽", 2: "小林"}

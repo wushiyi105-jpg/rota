@@ -8,12 +8,10 @@ from typing import Any
 
 import httpx
 
+from ...domain.errors import LLMError
+
 PROMPT = Path(__file__).resolve().parents[2] / "prompts" / "explain.md"
 MAX_TOKENS_CAP = 8000
-
-
-class LLMError(RuntimeError):
-    pass
 
 
 class OpenAICompatLLM:

@@ -10,13 +10,14 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-from ..adapters.export import csv_rows, group_message, per_staff_totals
+from ..adapters.llm import build_llm
 from ..adapters.store import SqliteStore
 from ..app import jobs as job_app
 from ..app.plan import build_for
 from ..app.run import explain_plan, export_ics, plan_month, replan_with_leave
 from ..config import settings as base_settings
 from ..domain.engine import explain
+from ..domain.export import csv_rows, group_message, per_staff_totals
 from ..domain.models import KIND_LABELS
 from ..domain.solver import parse_month
 
@@ -171,7 +172,8 @@ def comment(month: str = typer.Option(..., help="YYYY-MM"), db: Path = typer.Opt
     leaves = store.list_leaves()
     plan = build_for(month, staff, leaves, s, holidays=_holidays())
     names = {x.id: x.name for x in staff}
-    text, source, dropped = explain_plan(plan, names, s)
+    llm = build_llm(s.llm_base_url, s.llm_api_key, s.llm_model) if s.llm_enabled else None
+    text, source, dropped = explain_plan(plan, names, s, llm)
     console.print(text)
     if dropped:
         console.print(f"[yellow]（{dropped}，已退回离线解释）[/]")

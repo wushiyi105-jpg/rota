@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from datetime import date
 
-from ..adapters.export import csv_rows, group_message, ics, per_staff_totals
-from ..adapters.llm import LLMError, build_llm
 from ..config import Settings
 from ..domain.diff import diff
 from ..domain.engine import explain
+from ..domain.errors import LLMError
+from ..domain.export import csv_rows, group_message, ics, per_staff_totals
 from ..domain.guard import guard_text
 from ..domain.models import Assignment, Finding
 from ..ports import LLMPort, StorePort
@@ -59,8 +59,6 @@ def explain_plan(
 ) -> tuple[str, str, str | None]:
     """返回 (说明文本, 来源, 丢弃原因)。来源是 model 或 offline。"""
     offline = explain(plan.result)
-    if llm is None and settings.llm_enabled:
-        llm = build_llm(settings.llm_base_url, settings.llm_api_key, settings.llm_model)
     if llm is None:
         return offline, "offline", None
     facts = facts_of(plan, names)

@@ -6,15 +6,24 @@ import json
 from datetime import date
 from pathlib import Path
 
+from alembic import command
+from alembic.config import Config
 from sqlalchemy import Date, Integer, String, UniqueConstraint, create_engine, delete, select, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 from ...domain.models import Assignment, Leave, Staff
 
 
+def _upgrade_schema(engine) -> None:
+    root = next(p for p in Path(__file__).resolve().parents if (p / "alembic.ini").exists())
+    cfg = Config(str(root / "alembic.ini"))
+    cfg.set_main_option("script_location", str(root / "migrations"))
+    cfg.set_main_option("sqlalchemy.url", f"sqlite:///{engine.url.database}")
+    command.upgrade(cfg, "head")
+
+
 class Base(DeclarativeBase):
     pass
-
 
 class StaffRow(Base):
     __tablename__ = "staff"
@@ -23,7 +32,6 @@ class StaffRow(Base):
     name: Mapped[str] = mapped_column(String(80), unique=True)
     skills: Mapped[str] = mapped_column(String(200), default="")
     active: Mapped[int] = mapped_column(Integer, default=1)
-
 
 class LeaveRow(Base):
     __tablename__ = "leaves"
@@ -34,7 +42,6 @@ class LeaveRow(Base):
     end: Mapped[date] = mapped_column(Date)
     reason: Mapped[str] = mapped_column(String(120), default="")
 
-
 class PlanRow(Base):
     __tablename__ = "plans"
     __table_args__ = (UniqueConstraint("month", name="uq_plans_month"),)
@@ -42,7 +49,6 @@ class PlanRow(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     month: Mapped[str] = mapped_column(String(7), index=True)
     score: Mapped[int] = mapped_column(Integer, default=0)
-
 
 class AssignmentRow(Base):
     __tablename__ = "assignments"
@@ -52,7 +58,6 @@ class AssignmentRow(Base):
     day: Mapped[date] = mapped_column(Date)
     kind: Mapped[str] = mapped_column(String(16))
     staff_id: Mapped[int] = mapped_column(Integer, index=True)
-
 
 class JobRow(Base):
     __tablename__ = "jobs"
@@ -67,13 +72,12 @@ class JobRow(Base):
     next_run_at: Mapped[str] = mapped_column(String(32), index=True)
     created_at: Mapped[str] = mapped_column(String(32), default="")
 
-
 class SqliteStore:
     def __init__(self, db_path: Path) -> None:
         db_path.parent.mkdir(parents=True, exist_ok=True)
         self.engine = create_engine(f"sqlite:///{db_path}", future=True)
         self.session_factory = sessionmaker(self.engine, expire_on_commit=False)
-        Base.metadata.create_all(self.engine)
+        _upgrade_schema(self.engine)
 
     # ---- staff / leave ---------------------------------------------------
     def add_staff(self, name: str, skills: list[str] | None = None) -> int:
