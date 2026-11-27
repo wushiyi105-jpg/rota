@@ -32,7 +32,7 @@ jobs:
         run: uv run ruff check .
 
       - name: Type check
-        run: uv run mypy rota
+        run: uv run mypy rota tests/test_app_fake.py
 
       - name: Test
         env:
@@ -44,10 +44,11 @@ jobs:
           ROTA_DB_PATH: data/test.db
         run: |
           uv run coverage run -m pytest -q
+          uv run coverage report --fail-under=70
           uv run coverage xml
 
       - name: Audit
-        run: uv run pip-audit || true
+        run: uv run pip-audit
 
   docker:
     runs-on: ubuntu-latest
