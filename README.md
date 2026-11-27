@@ -77,7 +77,7 @@ uv run python -m rota doctor                     # 配置 / 数据库 / 模型 /
 把其他人的 `active` 置 0 即可（`staff` 表），排班时会跳过。
 
 **Docker 镜像验证了吗？**
-本机没有 Docker，`docker build .` 未执行，镜像未构建验证；Dockerfile 与端口只做了静态核对。
+CI 的 `docker` job 每次执行 `docker build .`，启动容器并轮询 `/health`；本机没有 Docker，本地未重复跑。
 
 ## 命令参考
 
