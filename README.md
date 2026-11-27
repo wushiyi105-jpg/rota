@@ -76,6 +76,9 @@ uv run python -m rota doctor                     # 配置 / 数据库 / 模型 /
 **能不能只排某几个人？**
 把其他人的 `active` 置 0 即可（`staff` 表），排班时会跳过。
 
+**Docker 镜像验证了吗？**
+本机没有 Docker，`docker build .` 未执行，镜像未构建验证；Dockerfile 与端口只做了静态核对。
+
 ## 命令参考
 
 | 命令 | 作用 |
@@ -104,7 +107,7 @@ uv run python -m rota doctor                     # 配置 / 数据库 / 模型 /
 | `alembic` | 表结构迁移，`alembic_version` 留痕 | 改表靠 `create_all`，线上没法回滚 |
 | `httpx` | 模型与 webhook 调用，带超时 | 请求没有超时，卡死整条链路 |
 | `typer` + `rich` | 子命令与终端表格 | 参数解析和排版全靠手写 |
-| `pytest` / `pytest-cov` / `respx` / `freezegun` | 59 条测试与覆盖率 | 改一条规则不知道会碰坏什么 |
+| `pytest` / `pytest-cov` / `respx` / `freezegun` | 61 条测试与覆盖率 | 改一条规则不知道会碰坏什么 |
 | `ruff` / `mypy` / `pip-audit` | 风格、类型、依赖漏洞 | CI 只跑测试，风格与类型漂移 |
 
 不引 `openpyxl`：CSV 已经能被 Excel 直接打开，为了一个导出格式多背一个依赖不值。
