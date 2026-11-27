@@ -14,6 +14,7 @@ from ..adapters.llm import build_llm
 from ..adapters.store import SqliteStore
 from ..app import jobs as job_app
 from ..app.plan import build_for
+from ..app.report import markdown as schedule_markdown
 from ..app.run import explain_plan, export_ics, plan_month, replan_with_leave
 from ..config import settings as base_settings
 from ..domain.engine import explain
@@ -117,6 +118,58 @@ def plan(
         )
         return
     _print_plan(plan, month, names)
+
+
+@app.command()
+def report(
+    month: str = typer.Option(..., help="YYYY-MM"),
+    out: Path = typer.Option(None, help="输出 Markdown 班表；给出后同时写同名 .ics"),
+    ics_out: Path = typer.Option(None, help="ICS 单独输出路径"),
+    no_llm: bool = typer.Option(False, "--no-llm", help="只出本地解释"),
+    db: Path = typer.Option(None),
+) -> None:
+    """一条命令出整月班表 + 公平账 + 可发群文本。"""
+    s = _settings(db)
+    store = SqliteStore(s.db_path)
+    if not store.list_staff():
+        console.print("[red]没有员工，先跑 seed[/]")
+        raise typer.Exit(code=1)
+    try:
+        parse_month(month)
+    except ValueError as exc:
+        console.print(f"[red]❌ {exc}[/]")
+        raise typer.Exit(code=2) from exc
+    holidays = _holidays()
+    plan = plan_month(store, s, month, holidays)
+    names = {x.id: x.name for x in store.list_staff()}
+    llm = build_llm(s.llm_base_url, s.llm_api_key, s.llm_model) if s.llm_enabled and not no_llm else None
+    comment, source, dropped = explain_plan(plan, names, s, llm)
+    text = schedule_markdown(
+        month=month,
+        assignments=plan.result.assignments,
+        names=names,
+        staff=store.list_staff(),
+        holidays=holidays,
+        findings=plan.result.findings,
+        score=plan.result.score,
+        comment=comment,
+        comment_source=source,
+        changes=plan.result.changes,
+        team=str(_load_seed().get("team", "")),
+    )
+    body = text
+    if source == "offline" and llm is None:
+        body += "\n本次为本地求解：模型未参与，上面是本地规则写的解释。\n"
+    if out:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(body, encoding="utf-8")
+        target = ics_out or out.with_suffix(".ics")
+        target.write_text(export_ics(plan.result.assignments, names, month), encoding="utf-8")
+        console.print(f"[green]已写出[/] {out} + {target}（{len(plan.result.assignments)} 条班次）")
+    else:
+        console.print(body)
+    if dropped:
+        console.print(f"[yellow]（{dropped}，模型解释已退回本地）[/]")
 
 
 @app.command()

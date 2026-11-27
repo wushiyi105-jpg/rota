@@ -1,0 +1,55 @@
+{
+  "templates": [
+    {
+      "name": "餐饮",
+      "team_hint": ["咖啡", "餐厅", "餐饮", "奶茶"],
+      "slots": [
+        {"kind": "morning", "label": "早班", "time": "08:00-14:00", "required_skill": "收银", "headcount": 1},
+        {"kind": "evening", "label": "晚班", "time": "14:00-22:00", "required_skill": "", "headcount": 1},
+        {"kind": "night", "label": "打烊", "time": "18:00-23:00", "required_skill": "", "headcount": 1}
+      ]
+    },
+    {
+      "name": "零售",
+      "team_hint": ["零售", "服装", "商场", "门店"],
+      "slots": [
+        {"kind": "morning", "label": "早班", "time": "09:00-16:00", "required_skill": "收银", "headcount": 1},
+        {"kind": "evening", "label": "晚班", "time": "15:00-22:00", "required_skill": "收银", "headcount": 1}
+      ]
+    },
+    {
+      "name": "药房",
+      "team_hint": ["药房", "药店", "医药"],
+      "slots": [
+        {"kind": "morning", "label": "早班", "time": "08:00-15:00", "required_skill": "药师", "headcount": 1},
+        {"kind": "evening", "label": "晚班", "time": "15:00-22:00", "required_skill": "收银", "headcount": 1}
+      ]
+    },
+    {
+      "name": "便利店",
+      "team_hint": ["便利", "24小时", "士多"],
+      "slots": [
+        {"kind": "morning", "label": "早班", "time": "07:00-15:00", "required_skill": "收银", "headcount": 1},
+        {"kind": "evening", "label": "中班", "time": "15:00-23:00", "required_skill": "收银", "headcount": 1},
+        {"kind": "night", "label": "夜班", "time": "23:00-07:00", "required_skill": "夜班", "headcount": 1}
+      ]
+    },
+    {
+      "name": "美业",
+      "team_hint": ["美发", "美容", "美甲", "美业"],
+      "slots": [
+        {"kind": "morning", "label": "早班", "time": "10:00-18:00", "required_skill": "发型师", "headcount": 1},
+        {"kind": "evening", "label": "晚班", "time": "13:00-21:00", "required_skill": "发型师", "headcount": 1}
+      ]
+    },
+    {
+      "name": "教培",
+      "team_hint": ["教育", "培训", "教培", "校区"],
+      "slots": [
+        {"kind": "morning", "label": "上午班", "time": "09:00-13:00", "required_skill": "老师", "headcount": 1},
+        {"kind": "evening", "label": "晚辅", "time": "16:00-20:30", "required_skill": "老师", "headcount": 1},
+        {"kind": "night", "label": "周末班", "time": "09:00-18:00", "required_skill": "老师", "headcount": 1}
+      ]
+    }
+  ]
+}

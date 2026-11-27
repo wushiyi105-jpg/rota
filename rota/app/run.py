@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import date
 
 from ..config import Settings
@@ -66,10 +67,40 @@ def explain_plan(
         raw = llm.explain(facts)
     except LLMError as exc:
         return offline, "offline", f"模型调用失败：{exc}"
-    kept, reason = guard_text(raw, facts, list(names.values()))
+
+    # 新提示词要求 JSON；解析成功就只让模型填“摘要 + 动作”，
+    # 问题本身用本地 finding 原文，避免整段因一个多余数字被丢掉。
+    try:
+        data = json.loads(raw)
+    except (TypeError, ValueError):
+        data = None
+    if isinstance(data, dict) and "summary" in data:
+        summary, reason = guard_text(str(data.get("summary", "")), facts, list(names.values()))
+        if reason:
+            return offline, "offline", reason
+        by_rule = {f.rule_id: f for f in plan.result.findings}
+        kept: list[str] = []
+        for issue in list(data.get("issues", []))[:5]:
+            if not isinstance(issue, dict):
+                continue
+            rule_id = str(issue.get("rule_id", ""))
+            action = str(issue.get("action", "")).strip()
+            finding = by_rule.get(rule_id)
+            if finding is None or not action:
+                continue
+            safe_action, because = guard_text(action, facts, list(names.values()))
+            if because:
+                continue
+            kept.append(f"- {finding.message} → {safe_action}")
+        body = summary.strip()
+        if kept:
+            body += "\n" + "\n".join(kept)
+        return body, "model", None
+
+    raw_kept, reason = guard_text(raw, facts, list(names.values()))
     if reason:
         return offline, "offline", reason
-    return kept, "model", None
+    return raw_kept, "model", None
 
 
 def export_ics(assignments: list[Assignment], names: dict[int, str], month: str) -> str:

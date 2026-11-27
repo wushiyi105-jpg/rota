@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- 新增 `report`：一条命令出整月班表 Markdown + ICS + 周末班公平账
+- 群消息改为整月完整班表，不再硬编码“近几天”
+- 模型解释改为 `summary + rule_id + action` 结构化输出，坏条只丢自己
+- 6 类门店模板与 12 条劳动规则库
 - `0001_init` 改为显式 `op.create_table` / `op.create_index`，运行期走 `alembic upgrade`
 - `app/` 只依赖 `ports`，新增内存假实现用例
 - 开 ruff `E2`/`E3`；CI 增加 `docker build` 与 `/health` 探活

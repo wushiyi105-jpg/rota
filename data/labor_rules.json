@@ -1,0 +1,16 @@
+{
+  "rules": [
+    {"id": "consecutive.over_limit", "name": "连续上班上限", "text": "连续上班不超过 5 天，第 6 天必须休息。", "enforced": true, "weight": 6},
+    {"id": "rest.night_to_morning", "name": "夜班后休息", "text": "夜班后到次日早班至少间隔 11 小时；不足 11 小时不排早班。", "enforced": true, "weight": 8},
+    {"id": "fairness.spread", "name": "周末公平", "text": "周末与法定节假日班次按 2 倍权重计，员工之间加权差不超过 1。", "enforced": true, "weight": 10},
+    {"id": "leave.conflict", "name": "请假优先", "text": "已批准请假期间不排班；冲突排班一律报红。", "enforced": true, "weight": 20},
+    {"id": "coverage.gap", "name": "每班有人", "text": "每个营业班次至少 1 人，缺人必须报缺口而不是静默跳过。", "enforced": true, "weight": 15},
+    {"id": "skill.mismatch", "name": "技能匹配", "text": "收银、药师、夜班、老师等岗位必须由具备对应技能的人上。", "enforced": true, "weight": 15},
+    {"id": "double.booking", "name": "同日不双班", "text": "同一员工同一天不排两个班次，避免事实上的连班。", "enforced": true, "weight": 15},
+    {"id": "holiday.weight", "name": "节假日权重", "text": "法定节假日上班计入 2 倍公平权重，换休时优先抵扣。", "enforced": true, "weight": 10},
+    {"id": "publish.advance", "name": "提前发布", "text": "班表至少提前 3 天发布，给员工留出换班时间。", "enforced": false, "weight": 0},
+    {"id": "swap.approval", "name": "换班审批", "text": "员工互换班次需店长确认，确认后以新班表为准。", "enforced": false, "weight": 0},
+    {"id": "overtime.pay", "name": "加班费", "text": "法定节假日与超时班次按当地标准计算加班费，不默认调休。", "enforced": false, "weight": 0},
+    {"id": "minor.night", "name": "未成年工保护", "text": "未成年工不排夜班，不安排超过法定时长的班次。", "enforced": false, "weight": 0}
+  ]
+}

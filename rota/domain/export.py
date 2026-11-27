@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 from .models import KIND_LABELS, Assignment
 
@@ -68,13 +68,14 @@ def per_staff_totals(assignments: list[Assignment], names: dict[int, str]) -> st
     return "\n".join(lines) + "\n"
 
 
-def group_message(month: str, assignments: list[Assignment], names: dict[int, str], limit: int = 5) -> str:
-    """群里能直接发的一段：只列未来几天。"""
-    today = date(2026, 12, 1)
-    upcoming = [a for a in assignments if a.day >= today][: limit * 2]
-    lines = [f"{month} 班表（近几天）："]
-    for a in upcoming:
+def group_message(month: str, assignments: list[Assignment], names: dict[int, str], limit: int = 0) -> str:
+    """群里能直接发的一段：整月每天一行；limit>0 时才截断。"""
+    rows = sorted(assignments, key=lambda x: (x.day, x.kind))
+    if limit:
+        rows = rows[:limit]
+    lines = [f"{month} 班表："]
+    for a in rows:
         lines.append(
-            f"{a.day.isoformat()} {KIND_LABELS.get(a.kind, a.kind)} {names.get(a.staff_id, a.staff_id)}"
+            f"{a.day.month}/{a.day.day} {KIND_LABELS.get(a.kind, a.kind)} {names.get(a.staff_id, a.staff_id)}"
         )
     return "\n".join(lines)
