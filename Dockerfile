@@ -6,6 +6,7 @@ WORKDIR /app
 COPY pyproject.toml README.md ./
 COPY rota ./rota
 COPY templates ./templates
+COPY static ./static
 COPY prompts ./prompts
 COPY migrations ./migrations
 COPY alembic.ini ./
@@ -24,6 +25,7 @@ WORKDIR /app
 
 COPY --from=builder /install /usr/local
 COPY --from=builder /app/templates ./templates
+COPY --from=builder /app/static ./static
 COPY --from=builder /app/prompts ./prompts
 COPY --from=builder /app/rota ./rota
 COPY --from=builder /app/migrations ./migrations
@@ -34,3 +36,4 @@ VOLUME ["/data"]
 EXPOSE 8001
 
 CMD ["uvicorn", "rota.iface.web:app_factory", "--factory", "--host", "0.0.0.0", "--port", "8001"]
+
