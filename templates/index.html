@@ -1,6 +1,6 @@
 {% from "_macros.html" import shell, head, stats, card, tag, empty, note %}
-{% call shell("Rota", "排班", true) %}
-{{ head("排班表", month ~ " · 团队 " ~ staff|length ~ " 人") }}
+{% call shell("Rota", "门店排班", true) %}
+{{ head("这个月谁上哪个班", month ~ " · 团队 " ~ staff|length ~ " 人") }}
 
 {{ stats([
   ("当前月份", month, ""),
@@ -38,15 +38,15 @@
 
 {% call card("班表", rows|length ~ " 天") %}
 {% if rows %}
-<div class="table-wrap">
-  <table class="table">
-    <thead><tr><th>日期</th><th>早班</th><th>晚班</th><th>夜班</th></tr></thead>
-    <tbody>
-      {% for r in rows %}
-      <tr><td class="strong">{{ r.day }}</td><td>{{ r.morning }}</td><td>{{ r.evening }}</td><td>{{ r.night }}</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="daywall">
+  {% for r in rows %}
+  <div class="daytile">
+    <div class="d">{{ r.day }}</div>
+    <div class="shift"><b>早</b>{{ r.morning }}</div>
+    <div class="shift"><b>晚</b>{{ r.evening }}</div>
+    <div class="shift"><b>夜</b>{{ r.night }}</div>
+  </div>
+  {% endfor %}
 </div>
 <div class="form-actions">
   <a class="btn" href="/export.ics?month={{ month }}">导出 ICS</a>
